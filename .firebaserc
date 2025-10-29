@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "movieapp-8feb8",
+    "tmdb": "tmdb-6e244"
+  },
+  "targets": {},
+  "etags": {}
+}
