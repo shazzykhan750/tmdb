@@ -1,4 +1,4 @@
-# netflixgpt
+# tmdbgpt
 
 -create react app
 
@@ -37,6 +37,6 @@
 -----MovieSuggestion
 ---------MovieLists \*N
 
--Netflix GPT
+-tmdb GPT
 --Search Bar
 --Movie Suggestions
