@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../utils/firebase"; // Import the auth object from firebase.js
+import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser, removerUser } from "../utils/userSlice";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { toggeleGptSearch } from "../utils/gptSlice";
 import { SUPPORTDE_LANGUAGES } from "../utils/constatns";
 import { changeLanguage } from "../utils/confgSlice";
@@ -15,51 +15,74 @@ const Header = () => {
   const user = useSelector((store) => store.user.user);
 
   const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
-  const handleLogout = () => {
-    auth
-      .signOut()
-      .then(() => {
-        // Sign-out successful.
-        dispatch(removerUser()); // Remove user from the store
 
-        // Navigate to the login page
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        dispatch(removerUser());
+        try {
+          localStorage.removeItem("session");
+        } catch (e) {
+          console.warn("[auth] error removing session from localStorage:", e);
+        }
+        navigate("/");
       })
       .catch((error) => {
-        // An error happened.
         console.error("Error signing out: ", error);
       });
   };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { uid, email, displayName, photoURL } = auth.currentUser;
+        const { uid, email, displayName, photoURL } = auth.currentUser || {};
+        const payload = {
+          uid: uid || user.uid,
+          email: email || user.email || "",
+          displayName: displayName || user.displayName || "",
+          photoURL: photoURL || user.photoURL || "",
+          provider: user.providerData?.[0]?.providerId || "unknown",
+        };
 
-        dispatch(
-          addUser({
-            uid: uid,
-            email: email,
-            displayName: displayName,
-            photoURL: photoURL,
-          }),
-          // Navigate to the browser page
-          navigate("/browser")
-        );
+        dispatch(addUser(payload));
+        try {
+          localStorage.setItem("session", JSON.stringify(payload));
+        } catch (e) {
+          console.warn(
+            "[auth] onAuthStateChanged - could not save session:",
+            e
+          );
+        }
 
-        // Remove user from the store
-        // Navigate to the login page
+        if (window.location.pathname !== "/browser") {
+          navigate("/browser");
+        }
       } else {
         dispatch(removerUser());
-        navigate("/");
+        try {
+          localStorage.removeItem("session");
+        } catch (e) {
+          console.warn(
+            "[auth] onAuthStateChanged - could not remove session:",
+            e
+          );
+        }
+
+        if (window.location.pathname !== "/") {
+          navigate("/");
+        }
       }
     });
+
     return () => {
-      unsubscribe(); // Unsubscribe from the auth state listener when the component unmounts
+      unsubscribe();
     };
-  }, []);
+  }, [dispatch, navigate]);
 
   const handleGptSearchClick = () => {
     dispatch(toggeleGptSearch());
   };
+
   const changeLanguages = (e) => {
     const selectedLanguage = e.target.value;
     dispatch(changeLanguage(selectedLanguage));

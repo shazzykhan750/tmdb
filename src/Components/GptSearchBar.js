@@ -24,7 +24,6 @@ const GptSearchBar = () => {
       url += `&sort_by=release_date.desc`;
     }
     if (genre) {
-      // Map genre name to TMDB genre ID (simplified example)
       const genreMap = {
         action: 28,
         adventure: 12,
@@ -96,7 +95,6 @@ Return a JSON with:
     });
 
     const gptText = gptResult.choices[0]?.message?.content;
-    console.log("GPT Filter Output:", gptText);
 
     let filters;
     try {
@@ -113,7 +111,6 @@ Return a JSON with:
     if (filters && typeof filters === "object") {
       tmdbResults = await fetchTmdbByFilters(filters);
     } else {
-      // fallback: extract list of movie names
       const backupGpt = await openai.chat.completions.create({
         messages: [
           {

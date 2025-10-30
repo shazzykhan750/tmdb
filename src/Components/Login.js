@@ -1,38 +1,104 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../utils/firebase"; // Import the auth object from firebase.js
+import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { saveSession } from "../utils/sessionManager";
+
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Import useDispatch from react-redux
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("test", "test");
+      const test = localStorage.getItem("test");
+      if (test === "test") {
+        localStorage.removeItem("test");
+      } else {
+        console.error("[Login] localStorage test failed - value mismatch");
+      }
+    } catch (e) {
+      console.error("[Login] localStorage is not available:", e);
+    }
+  }, []);
 
   const email = useRef(null);
   const password = useRef(null);
-  const name = useRef(null); // Ref for the name input field
+  const name = useRef(null);
+
+  const provider = new GoogleAuthProvider();
 
   const handleSignUp = () => {
     setIsSignInForm((prev) => !prev);
   };
-  const handleButtonClick = (e) => {
-    e.preventDefault(); // Prevent form submission
 
-    const message = checkValidData(email.current.value, password.current.value);
+  const saveSessionAndNavigate = (payload) => {
+    try {
+      dispatch(addUser(payload));
+
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...payload,
+          timestamp: new Date().getTime(),
+        })
+      );
+
+      navigate("/browser");
+    } catch (error) {
+      console.error("Error saving session:", error);
+      setErrorMessage("Failed to save session");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setErrorMessage(null);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const payload = {
+        uid: user.uid,
+        email: user.email || "",
+        displayName:
+          user.displayName || (user.email ? user.email.split("@")[0] : ""),
+        photoURL: user.photoURL || "",
+        provider: user.providerData?.[0]?.providerId || "google",
+      };
+
+      saveSessionAndNavigate(payload);
+    } catch (error) {
+      console.error("Google sign in error:", error);
+      setErrorMessage(error.code + " - " + error.message);
+    }
+  };
+
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+
+    const message = checkValidData(
+      email.current?.value || "",
+      password.current?.value || ""
+    );
     if (message) {
       setErrorMessage(message);
       return;
     } else {
       setErrorMessage(null);
-    } // Clear error message if validation passes
+    }
+
     if (!isSignInForm) {
       createUserWithEmailAndPassword(
         auth,
@@ -40,37 +106,31 @@ const Login = () => {
         password.current.value
       )
         .then((userCredential) => {
-          // Signed in
           const user = userCredential.user;
-
           updateProfile(user, {
-            displayName: name.current.value,
+            displayName: name.current?.value || "",
             photoURL: "",
           })
             .then(() => {
-              const { uid, email, displayName, photoURL } = auth.currentUser;
+              const current = auth.currentUser;
+              const payload = {
+                uid: current.uid,
+                email: current.email || "",
+                displayName: current.displayName || name.current?.value || "",
+                photoURL: current.photoURL || "",
+                provider: "password",
+              };
 
-              dispatch(
-                addUser({
-                  uid: uid,
-                  email: email,
-                  displayName: displayName,
-                  photoURL: photoURL,
-                })
-                // Navigate to the browser page
-              );
-              navigate("/browser");
+              saveSessionAndNavigate(payload);
             })
             .catch((error) => {
-              // An error occurred
-              // ...
+              console.error("updateProfile error:", error);
+              setErrorMessage(error.code + " - " + error.message);
             });
-          // Navigate to the browser page
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(errorCode + " -" + errorMessage);
+          console.error("createUser error:", error);
+          setErrorMessage(error.code + " - " + error.message);
         });
     } else {
       signInWithEmailAndPassword(
@@ -79,16 +139,19 @@ const Login = () => {
         password.current.value
       )
         .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-
-          navigate("/browser"); // Navigate to the browser page
-          // ...
+          const u = userCredential.user;
+          const payload = {
+            uid: u.uid,
+            email: u.email || "",
+            displayName: u.displayName || "",
+            photoURL: u.photoURL || "",
+            provider: "password",
+          };
+          saveSessionAndNavigate(payload);
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(errorCode + " -" + errorMessage);
+          console.error("signIn error:", error);
+          setErrorMessage(error.code + " - " + error.message);
         });
     }
   };
@@ -103,24 +166,21 @@ const Login = () => {
           alt="background-img"
         />
 
-        {/* Centered form using flexbox */}
         <div className="absolute inset-0 flex justify-center items-center">
           <form className="bg-black/60 p-10 rounded text-white w-[400px]">
             <h1 className="text-3xl font-bold px-2 mb-4">
               {isSignInForm ? "Sign In" : "Sign Up"}
             </h1>
 
-            {/* Name field (only shown for Sign Up) */}
             {!isSignInForm && (
               <input
                 ref={name}
                 type="text"
                 placeholder="Name"
-                className={`py-3 px-2 m-2 w-full rounded text-white bg-black/60 border border-white transition-all duration-300 `}
+                className="py-3 px-2 m-2 w-full rounded text-white bg-black/60 border border-white transition-all duration-300"
               />
             )}
 
-            {/* Common Fields */}
             <input
               ref={email}
               type="email"
@@ -140,6 +200,19 @@ const Login = () => {
               onClick={handleButtonClick}
             >
               {isSignInForm ? "Sign In" : "Sign Up"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="py-3 m-2 w-full bg-white text-black rounded cursor-pointer hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="google"
+                className="w-5 h-5"
+              />
+              Sign in with Google
             </button>
 
             <p className="py-3 m-2 text-center">

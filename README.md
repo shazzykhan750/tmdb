@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # tmdb
+=======
+# tmdbgpt
+>>>>>>> 996a79e1965cba69d9099b4a1aa1ed804ade4b30
 
 -create react app
 
