@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "movieapp-8feb8",
+    "default": "tmdb-6e244",
     "tmdb": "tmdb-6e244"
   },
   "targets": {},
