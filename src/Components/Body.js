@@ -9,6 +9,8 @@ import {
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { loadSession } from "../utils/sessionManager";
+import WatchPage from "./WatchPage";
+import Favorites from "./Favorites";
 
 const Body = () => {
   const dispatch = useDispatch();
@@ -42,6 +44,14 @@ const Body = () => {
     {
       path: "/browser",
       element: <Browser />,
+    },
+    {
+      path: "/watchpage/:resId",
+      element: <WatchPage />,
+    },
+    {
+      path: "/favorites",
+      element: <Favorites />,
     },
   ]);
 

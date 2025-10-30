@@ -83,6 +83,10 @@ const Header = () => {
     dispatch(toggeleGptSearch());
   };
 
+  const openFavorites = () => {
+    navigate("/favorites");
+  };
+
   const changeLanguages = (e) => {
     const selectedLanguage = e.target.value;
     dispatch(changeLanguage(selectedLanguage));
@@ -100,6 +104,13 @@ const Header = () => {
           <p className="text-2xl px-5 font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent animate-fadeIn">
             {user.displayName}
           </p>
+          <button
+            onClick={openFavorites}
+            className="px-3 py-2 mr-2 bg-yellow-600 text-black rounded font-semibold"
+            title="Favorites"
+          >
+            ★ Favorites
+          </button>
           {showGptSearch && (
             <select
               name=""
