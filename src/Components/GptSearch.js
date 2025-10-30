@@ -5,9 +5,6 @@ import GptMovieSuggestion from "./GptMovieSuggestion";
 const GptSearch = () => {
   return (
     <div className="relative min-h-screen pt-20">
-      {" "}
-      {/* Added padding top */}
-      {/* Background Image */}
       <div className="absolute inset-0 -z-10">
         <img
           className="w-full h-full object-cover"
@@ -15,7 +12,7 @@ const GptSearch = () => {
           alt="background-img"
         />
       </div>
-      {/* Foreground Content */}
+
       <div className="w-full px-8 py-12 z-10 relative">
         <GptSearchBar />
         <GptMovieSuggestion />

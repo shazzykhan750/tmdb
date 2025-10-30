@@ -16,7 +16,7 @@ const GptMovieSuggestion = () => {
       <h1 className="text-3xl font-bold text-white mb-6">Movie Suggestions</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {flattenedMovies
-          .filter((movie) => movie.poster_path) // Only show movies with a poster
+          .filter((movie) => movie.poster_path)
           .map((movie) => (
             <div
               key={movie.id}

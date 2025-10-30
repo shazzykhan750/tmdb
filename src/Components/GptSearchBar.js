@@ -1,13 +1,13 @@
 import React, { useRef } from "react";
-import lang from "../utils/languageConstants";
-import { useSelector, useDispatch } from "react-redux";
+
+import { useDispatch } from "react-redux";
 import { addGptMovie } from "../utils/gptSlice";
 import openai from "../utils/openai";
 import { API_OPTIONS } from "../utils/constatns";
 
 const GptSearchBar = () => {
   const searchText = useRef();
-  const selectedLanguage = useSelector((store) => store.confg.lang);
+
   const dispatch = useDispatch();
 
   const fetchTmdbByFilters = async ({
@@ -145,14 +145,13 @@ Return a JSON with:
         <input
           ref={searchText}
           type="text"
-          placeholder={lang[selectedLanguage].gptSearchPlaceHolder}
           className="p-4 m-4 col-span-9 bg-white rounded-lg text-black placeholder:text-gray-500 border-none focus:outline-none"
         />
         <button
           className="col-span-3 m-4 py-2 px-4 bg-red-700 rounded-lg text-white hover:bg-red-800 transition duration-300 cursor-pointer"
           onClick={handleClickGptSerach}
         >
-          {lang[selectedLanguage].search}
+          search
         </button>
       </form>
     </div>

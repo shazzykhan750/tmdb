@@ -111,20 +111,7 @@ const Header = () => {
           >
             ★ Favorites
           </button>
-          {showGptSearch && (
-            <select
-              name=""
-              id=""
-              className="p-2 m-2 bg-gray-800 text-white rounded-lg"
-              onChange={changeLanguages}
-            >
-              {SUPPORTDE_LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
-          )}
+
           <button
             className="px-4 py-2 mx-4 bg-purple-800  my-2 text-white rounded-lg cursor-pointer"
             onClick={handleGptSearchClick}

@@ -13,20 +13,17 @@ const Favorites = () => {
     "https://assets.nflxext.com/ffe/siteui/vlv3/98df3030-1c2b-4bd1-a2f5-13c611857edb/web/IN-en-20250331-TRIFECTA-perspective_247b6f06-c36d-4dff-a8eb-4013325c3f8e_large.jpg";
 
   return (
-    // Use the background image on the container so it covers the whole area
     <div
       className="relative min-h-screen overflow-hidden"
       style={{
         backgroundImage: `url(${bgUrl})`,
-        backgroundSize: "cover", // tailwind bg-cover equivalent
-        backgroundPosition: "center", // tailwind bg-center
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* dark overlay */}
       <div className="absolute inset-0 bg-black/60 z-0" />
 
-      {/* main content sits above the overlay */}
       <div className="relative z-10 p-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between">

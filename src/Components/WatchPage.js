@@ -18,7 +18,6 @@ const WatchPage = () => {
       }
       const data = await response.json();
 
-      // data.results is an array — pick the YouTube trailer if available
       const trailer =
         (data.results &&
           data.results.find(
@@ -28,7 +27,7 @@ const WatchPage = () => {
 
       const key = trailer?.key || null;
       setVideoKey(key);
-      // Log the fetched key directly (state updates are async — don't rely on state immediately after set)
+
       console.log(key, "fetched video key");
     } catch (err) {
       console.error("Error fetching video:", err);
@@ -43,7 +42,6 @@ const WatchPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
-      {/* Close button */}
       <button
         aria-label="Close"
         onClick={() => navigate("/browser")}

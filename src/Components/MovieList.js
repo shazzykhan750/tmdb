@@ -8,7 +8,6 @@ const MovieList = ({ title, movies }) => {
 
   if (!movies || movies.length === 0) return null;
 
-  // Filter movies based on search query
   const filteredMovies = movies.filter(
     (movie) =>
       movie.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
