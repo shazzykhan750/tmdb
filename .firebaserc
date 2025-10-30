@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "tmdb-6e244",
-    "tmdb": "tmdb-6e244"
+    "default": "tmdbproject-b23f3"
   },
   "targets": {},
   "etags": {}
