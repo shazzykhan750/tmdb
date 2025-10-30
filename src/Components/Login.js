@@ -216,7 +216,7 @@ const Login = () => {
             </button>
 
             <p className="py-3 m-2 text-center">
-              {isSignInForm ? "New to Netflix?" : "Already registered?"}{" "}
+              {isSignInForm ? "New to TMDB?" : "Already registered?"}{" "}
               <span
                 onClick={handleSignUp}
                 className={`font-bold cursor-pointer ${
